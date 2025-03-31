@@ -12,8 +12,8 @@
 5. Gameplay Video
     - Comming Soon
 6. Educational Game Design Document
-    - ![Educational Game Design Document](".\Educational Game Design Document.md")
+    - [Educational Game Design Document](".\Educational Game Design Document.md")
 7. Resources
     - Miner Character
         - Author: KostK2Boss
-        - ![Miner Sprite Sheet]("https://www.deviantart.com/kostk2boss/art/custom-miner-sprites-252465211")
+        - [Miner Sprite Sheet](https://www.deviantart.com/kostk2boss/art/custom-miner-sprites-252465211)

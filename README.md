@@ -12,7 +12,7 @@
 5. Gameplay Video
     - Comming Soon
 6. Educational Game Design Document
-    - [Educational Game Design Document](Educational Game Design Document.md)
+    - [Educational Game Design Document](EGDD.md)
 7. Resources
     - Miner Character
         - Author: KostK2Boss

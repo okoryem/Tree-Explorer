@@ -9,6 +9,7 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth3; // Prefab for depth 3
     public GameObject jewelPrefab; // Prefab for the jewel
     private TreeStructure tree;
+    private bool isNavigating = false; // Lock flag to prevent re-entry
 
     void Start()
     {
@@ -40,56 +41,67 @@ public class TreeLogic : MonoBehaviour
     // Function to navigate to a specific direction (left, right, or parent)
     public void Navigate(GameObject currentCave, string direction)
     {
-        TreeStructure.Node currentNode = FindNodeByGameObject(currentCave);
+        if (isNavigating) return; // Prevent re-entry
+        isNavigating = true;
 
-        if (currentNode == null)
+        try
         {
-            Debug.LogError("Node not found for the given GameObject!");
-            return;
-        }
+            // Original Navigate logic
+            TreeStructure.Node currentNode = FindNodeByGameObject(currentCave);
 
-        TreeStructure.Node targetNode = null;
-
-        switch (direction.ToLower())
-        {
-            case "left":
-                targetNode = currentNode.left;
-                break;
-            case "right":
-                targetNode = currentNode.right;
-                break;
-            case "parent":
-                targetNode = currentNode.parent;
-                break;
-            default:
-                Debug.LogError("Invalid direction specified!");
-                return;
-        }
-
-        if (targetNode == null)
-        {
-            Debug.LogError($"No {direction} node exists for the current node!");
-            return;
-        }
-
-        // Deactivate all caves
-        tree.TraverseBFS(node =>
-        {
-            if (node.cavePrefab != null)
+            if (currentNode == null)
             {
-                node.cavePrefab.SetActive(false);
+                Debug.LogError("Node not found for the given GameObject!");
+                return;
             }
-        });
 
-        // Activate the target node's cave
-        targetNode.cavePrefab.SetActive(true);
+            TreeStructure.Node targetNode = null;
 
-        // Optionally, teleport the player to the target cave's position
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
+            switch (direction.ToLower())
+            {
+                case "left":
+                    targetNode = currentNode.left;
+                    break;
+                case "right":
+                    targetNode = currentNode.right;
+                    break;
+                case "parent":
+                    targetNode = currentNode.parent;
+                    break;
+                default:
+                    Debug.LogError("Invalid direction specified!");
+                    return;
+            }
+
+            if (targetNode == null)
+            {
+                Debug.LogError($"No {direction} node exists for the current node!");
+                return;
+            }
+
+            // Deactivate all caves
+            tree.TraverseBFS(node =>
+            {
+                if (node.cavePrefab != null)
+                {
+                    node.cavePrefab.SetActive(false);
+                }
+            });
+
+            // Activate the target node's cave
+            targetNode.cavePrefab.SetActive(true);
+
+            // Optionally, teleport the player to the target cave's position
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                player.transform.position = targetNode.cavePrefab.transform.position;
+                Debug.Log($"Player teleported to {direction} node: {targetNode.cavePrefab.name}");
+            }
+        }
+        finally
         {
-            player.transform.position = targetNode.cavePrefab.transform.position;
-            Debug.Log($"Player teleported to {direction} node: {targetNode.cavePrefab.name}");
+            isNavigating = false; // Always reset the flag
         }
     }
 

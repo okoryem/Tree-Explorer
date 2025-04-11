@@ -38,19 +38,19 @@ public class CaveLogic : MonoBehaviour
             if (IsPointNearCollider(leftCollider, contactPoint))
             {
                 Debug.Log("Left collider triggered!");
-                collision.transform.position = new Vector3(0, 0, 3); // Move the miner to a specific point
+                collision.transform.position = new Vector3(0.45f, 2, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "left");
             }
             else if (IsPointNearCollider(rightCollider, contactPoint))
             {
                 Debug.Log("Right collider triggered!");
-                collision.transform.position = new Vector3(0, 0, 3); // Move the miner to a specific point
+                collision.transform.position = new Vector3(0.45f, 2, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "right");
             }
             else if (IsPointNearCollider(parentCollider, contactPoint))
             {
                 Debug.Log("Parent collider triggered!");
-                collision.transform.position = new Vector3(0, 0, 3); // Move the miner to a specific point
+                collision.transform.position = new Vector3(0, -3, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "parent");
             }
             else

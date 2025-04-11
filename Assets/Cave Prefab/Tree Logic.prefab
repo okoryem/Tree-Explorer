@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 697627116492409563}
   m_Layer: 0
   m_Name: Tree Logic
-  m_TagString: Untagged
+  m_TagString: TreeLogic
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,3 +47,4 @@ MonoBehaviour:
   caveDepth1: {fileID: 7432005128684485410, guid: 8ffd44a79cc0a8b4291c47fc744c4874, type: 3}
   caveDepth2: {fileID: 1675120625154615554, guid: 5b6a0a8dc4dc8f94e9aa431117df6e8f, type: 3}
   caveDepth3: {fileID: 8626613569591414977, guid: 9c5958206d6b90a478978e43c9648bbd, type: 3}
+  jewelPrefab: {fileID: 7511830382048619564, guid: 9cf1376201813de439768991f87712c2, type: 3}

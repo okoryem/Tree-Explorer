@@ -11,9 +11,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/FristBuild.unity
     guid: 78f25d3602690d94fadffc092e6ade84
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/BasicMovementAndAnim.unity
     guid: 31f73a94eb0c45744bca704c0db8a91c
+  - enabled: 1
+    path: Assets/Scenes/Alpha.unity
+    guid: b0afa87c9d5828548ae43ce1d855b82e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

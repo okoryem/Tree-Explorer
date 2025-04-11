@@ -7,6 +7,7 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth1; // Prefab for depth 1
     public GameObject caveDepth2; // Prefab for depth 2
     public GameObject caveDepth3; // Prefab for depth 3
+    public GameObject jewelPrefab; // Prefab for the jewel
     private TreeStructure tree;
 
     void Start()
@@ -125,12 +126,19 @@ public class TreeLogic : MonoBehaviour
         leftCave.name = node.cavePrefab.name + "_Left";
         node.left = new TreeStructure.Node(leftCave, node);
 
+        // Spawn a jewel in the left cave
+        GameObject leftJewel = Instantiate(jewelPrefab, leftCave.transform.position, Quaternion.identity);
+        leftJewel.name = leftCave.name + "_Jewel";
+        leftJewel.transform.SetParent(leftCave.transform); // Parent the jewel to the cave
+        leftJewel.SetActive(false); // Keep the jewel initially inactive
+
         // Assign relationships in the CaveController script
         var leftController = leftCave.GetComponent<CaveController>();
         if (leftController != null)
         {
             leftController.parentCave = node.cavePrefab; // Set parent
             node.cavePrefab.GetComponent<CaveController>().leftCave = leftCave; // Set left child
+            leftController.jewel = leftJewel; // Assign the jewel to the CaveController
         }
 
         // Create right child
@@ -138,17 +146,52 @@ public class TreeLogic : MonoBehaviour
         rightCave.name = node.cavePrefab.name + "_Right";
         node.right = new TreeStructure.Node(rightCave, node);
 
+        // Spawn a jewel in the right cave
+        GameObject rightJewel = Instantiate(jewelPrefab, rightCave.transform.position, Quaternion.identity);
+        rightJewel.name = rightCave.name + "_Jewel";
+        rightJewel.transform.SetParent(rightCave.transform); // Parent the jewel to the cave
+        rightJewel.SetActive(false); // Keep the jewel initially inactive
+
         // Assign relationships in the CaveController script
         var rightController = rightCave.GetComponent<CaveController>();
         if (rightController != null)
         {
             rightController.parentCave = node.cavePrefab; // Set parent
             node.cavePrefab.GetComponent<CaveController>().rightCave = rightCave; // Set right child
+            rightController.jewel = rightJewel; // Assign the jewel to the CaveController
         }
 
         // Recurse for left and right children
         GenerateTreeRecursive(node.left, depth - 1);
         GenerateTreeRecursive(node.right, depth - 1);
+    }
+
+    // Spawns a jewel in the given cave
+    void SpawnJewel(GameObject cave)
+    {
+        if (jewelPrefab != null)
+        {
+            // Instantiate the jewel at the cave's position
+            GameObject jewel = Instantiate(jewelPrefab, cave.transform.position, Quaternion.identity);
+            jewel.name = cave.name + "_Jewel";
+
+            // Parent the jewel to the cave for better organization
+            jewel.transform.SetParent(cave.transform);
+
+            // Keep the jewel initially inactive
+            jewel.SetActive(false);
+
+            // Assign the jewel to the CaveController for activation/deactivation
+            var caveController = cave.GetComponent<CaveController>();
+            if (caveController != null)
+            {
+                caveController.jewel = jewel;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Jewel prefab is not assigned!");
+        }
     }
 
     GameObject GetPrefabForDepth(int depth)

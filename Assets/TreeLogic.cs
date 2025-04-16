@@ -8,6 +8,7 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth2; // Prefab for depth 2
     public GameObject caveDepth3; // Prefab for depth 3
     public GameObject jewelPrefab; // Prefab for the jewel
+    public GameObject titleScreen; // Prefav for the title screen
     private TreeStructure tree;
     private bool isNavigating = false; // Lock flag to prevent re-entry
 
@@ -20,6 +21,12 @@ public class TreeLogic : MonoBehaviour
 
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);
+
+    }
+
+    public void startGame(){ // Function for start button on title screen
+        titleScreen.SetActive(false);
+        Debug.Log("Start Button Pressed!");
     }
 
     // Function to search for a node by its GameObject
@@ -296,5 +303,6 @@ public class TreeLogic : MonoBehaviour
                 if (current.right != null) queue.Enqueue(current.right);
             }
         }
+
     }
 }

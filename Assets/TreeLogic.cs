@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class TreeLogic : MonoBehaviour
 {
@@ -9,8 +11,14 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth3; // Prefab for depth 3
     public GameObject jewelPrefab; // Prefab for the jewel
     public GameObject titleScreen; // Prefav for the title screen
+    public GameObject goodJobPopup; // Reference to the "Good Job" popup
+    public GameObject tryAgainPopup; // Reference to the "Try Again" popup
     private TreeStructure tree;
     private bool isNavigating = false; // Lock flag to prevent re-entry
+    private LinkedList<TreeStructure.Node> correctPath = new LinkedList<TreeStructure.Node>(); // Correct path as a linked list
+    private LinkedListNode<TreeStructure.Node> currentPathNode; // Tracks the current node in the linked list
+    private HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
+    private LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
 
     void Start()
     {
@@ -22,6 +30,18 @@ public class TreeLogic : MonoBehaviour
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);
 
+        // Generate the correct path based on BFS
+        GenerateCorrectPath();
+
+        // Traverse the tree in BFS order and log the names of the nodes
+        Debug.Log("BFS Traversal of the Tree:");
+        tree.TraverseBFS(node =>
+        {
+            if (node.cavePrefab != null)
+            {
+                Debug.Log(node.cavePrefab.name);
+            }
+        });
     }
 
     public void startGame(){ // Function for start button on title screen
@@ -53,7 +73,6 @@ public class TreeLogic : MonoBehaviour
 
         try
         {
-            // Original Navigate logic
             TreeStructure.Node currentNode = FindNodeByGameObject(currentCave);
 
             if (currentNode == null)
@@ -86,6 +105,9 @@ public class TreeLogic : MonoBehaviour
                 return;
             }
 
+            // Update the current path and compare it with the correct path
+            UpdateCurrentPath(targetNode);
+
             // Deactivate all caves
             tree.TraverseBFS(node =>
             {
@@ -110,6 +132,34 @@ public class TreeLogic : MonoBehaviour
         {
             isNavigating = false; // Always reset the flag
         }
+    }
+
+    // Helper method to determine if the chosen node is correct
+    private bool IsCorrectNode(TreeStructure.Node targetNode)
+    {
+        // Check if the target node matches the next node in the linked list
+        if (currentPathNode != null && currentPathNode.Value == targetNode)
+        {
+            visitedNodes.Add(targetNode); // Mark the node as visited
+            currentPathNode = currentPathNode.Next; // Move to the next node in the linked list
+            return true; // Correct choice
+        }
+
+        return false; // Incorrect choice
+    }
+
+    // Helper method to show a popup
+    private void ShowPopup(GameObject popup)
+    {
+        popup.SetActive(true);
+        StartCoroutine(HidePopupAfterDelay(popup, 2f)); // Hide after 2 seconds
+    }
+
+    // Coroutine to hide a popup after a delay
+    private IEnumerator HidePopupAfterDelay(GameObject popup, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        popup.SetActive(false);
     }
 
     void GenerateTree(TreeStructure tree, int depth)
@@ -254,6 +304,95 @@ public class TreeLogic : MonoBehaviour
 
         // Enable only the root cave initially
         tree.GetRoot().cavePrefab.SetActive(true);
+    }
+
+    private void GenerateCorrectPath()
+    {
+        correctPath.Clear(); // Clear any existing path
+        visitedNodes.Clear(); // Clear visited nodes
+
+        if (tree == null || tree.GetRoot() == null) return;
+
+        Queue<TreeStructure.Node> queue = new Queue<TreeStructure.Node>();
+        TreeStructure.Node rootNode = tree.GetRoot();
+
+        // Add the root node to visited nodes
+        visitedNodes.Add(rootNode);
+
+        queue.Enqueue(rootNode);
+
+        bool isRoot = true; // Flag to skip the root node in the correct path
+
+        while (queue.Count > 0)
+        {
+            TreeStructure.Node current = queue.Dequeue();
+
+            // Skip the root node in the correct path
+            if (isRoot)
+            {
+                isRoot = false;
+            }
+            else
+            {
+                correctPath.AddLast(current); // Add non-root nodes to the correct path
+            }
+
+            // Enqueue children
+            if (current.left != null) queue.Enqueue(current.left);
+            if (current.right != null) queue.Enqueue(current.right);
+        }
+
+        Debug.Log("Correct Path (BFS, excluding root): " + string.Join(", ", correctPath.Select(node => node.cavePrefab.name)));
+    }
+
+    private void UpdateCurrentPath(TreeStructure.Node targetNode)
+    {
+        // Check if the target node has already been visited
+        if (visitedNodes.Contains(targetNode))
+        {
+            Debug.Log($"Node {targetNode.cavePrefab.name} has already been visited. Skipping correctness check and no popup will be shown.");
+            return; // Exit early if the node has already been visited
+        }
+
+        // Add the target node to the current path
+        currentPath.AddLast(targetNode);
+
+        // Compare the current path with the correct path
+        if (currentPath.Count > correctPath.Count)
+        {
+            Debug.Log($"Incorrect Path: Current path exceeds the correct path. Correct node was: {correctPath.Last.Value.cavePrefab.name}");
+            ShowPopup(tryAgainPopup); // Show "Try Again" popup if the current path exceeds the correct path
+            currentPath.RemoveLast(); // Remove the incorrect node
+            return;
+        }
+
+        var correctPathNode = correctPath.First;
+        var currentPathNode = currentPath.First;
+
+        while (currentPathNode != null && correctPathNode != null)
+        {
+            if (currentPathNode.Value != correctPathNode.Value)
+            {
+                Debug.Log($"Incorrect Path: Current path does not match the correct path. Correct node was: {correctPathNode.Value.cavePrefab.name}");
+                ShowPopup(tryAgainPopup); // Show "Try Again" popup if the paths don't match
+                currentPath.RemoveLast(); // Remove the incorrect node
+                return;
+            }
+
+            currentPathNode = currentPathNode.Next;
+            correctPathNode = correctPathNode.Next;
+        }
+
+        // If the paths match so far, show the "Good Job" popup
+        Debug.Log($"Correct Path: Current path matches the correct path so far. Next correct node is: {correctPathNode?.Value.cavePrefab.name ?? "None"}");
+        ShowPopup(goodJobPopup);
+
+        // Add the target node to visited nodes only if it is correct
+        visitedNodes.Add(targetNode);
+
+        // Log the current and correct paths for debugging
+        Debug.Log("Current Path: " + string.Join(", ", currentPath.Select(node => node.cavePrefab.name)));
+        Debug.Log("Correct Path: " + string.Join(", ", correctPath.Select(node => node.cavePrefab.name)));
     }
 
     // Inner TreeStructure class

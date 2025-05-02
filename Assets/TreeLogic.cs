@@ -17,8 +17,8 @@ public class TreeLogic : MonoBehaviour
     private bool isNavigating = false; // Lock flag to prevent re-entry
     private LinkedList<TreeStructure.Node> correctPath = new LinkedList<TreeStructure.Node>(); // Correct path as a linked list
     private LinkedListNode<TreeStructure.Node> currentPathNode; // Tracks the current node in the linked list
-    private HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
-    private LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
+    public HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
+    public LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
 
     void Start()
     {
@@ -393,6 +393,26 @@ public class TreeLogic : MonoBehaviour
         // Log the current and correct paths for debugging
         Debug.Log("Current Path: " + string.Join(", ", currentPath.Select(node => node.cavePrefab.name)));
         Debug.Log("Correct Path: " + string.Join(", ", correctPath.Select(node => node.cavePrefab.name)));
+    }
+
+    public void PrintVisitedNodes()
+    {
+        if (visitedNodes.Count == 0)
+        {
+            Debug.Log("No nodes have been visited yet.");
+            return;
+        }
+
+        string visitedNodeNames = string.Join(", ", visitedNodes.Select(node => node.cavePrefab.name));
+        Debug.Log($"Visited Nodes: {visitedNodeNames}");
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.V)) // Press 'V' to print visited nodes
+        {
+            PrintVisitedNodes();
+        }
     }
 
     // Inner TreeStructure class

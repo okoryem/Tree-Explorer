@@ -8,6 +8,7 @@ public class BasicMovement : MonoBehaviour
     public float speed = 2;
     public GameObject startScreen;
     public GameObject explanationScreen;
+    public 
 
     // Update is called once per frame
     void Update()

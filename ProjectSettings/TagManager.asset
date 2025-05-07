@@ -8,6 +8,10 @@ TagManager:
   - Tree Logic
   - TreeLogic
   - startScreen
+  - Jewel1
+  - Jewel2
+  - Jewel3
+  - Logic
   layers:
   - Default
   - TransparentFX

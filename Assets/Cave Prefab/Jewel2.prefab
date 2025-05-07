@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5699611182091554312}
   m_Layer: 0
   m_Name: Jewel2
-  m_TagString: Untagged
+  m_TagString: Jewel2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

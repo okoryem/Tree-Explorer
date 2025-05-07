@@ -9,7 +9,6 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth1; // Prefab for depth 1
     public GameObject caveDepth2; // Prefab for depth 2
     public GameObject caveDepth3; // Prefab for depth 3
-    public GameObject jewelPrefab; // Prefab for the jewel
     public GameObject titleScreen; // Prefav for the title screen
     public GameObject goodJobPopup; // Reference to the "Good Job" popup
     public GameObject tryAgainPopup; // Reference to the "Try Again" popup
@@ -25,7 +24,7 @@ public class TreeLogic : MonoBehaviour
         tree = new TreeStructure();
 
         // Generate a binary tree of depth 3
-        GenerateTree(tree, 3);
+        GenerateTree(tree, 7);
 
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);
@@ -170,7 +169,7 @@ public class TreeLogic : MonoBehaviour
             return;
         }
 
-        // Create the root node using the first prefab
+        // Create the root node using caveDepth1
         GameObject rootCave = Instantiate(caveDepth1, Vector3.zero, Quaternion.identity);
         rootCave.name = "Root";
 
@@ -181,105 +180,40 @@ public class TreeLogic : MonoBehaviour
         tree.SetRoot(rootNode);
 
         // Recursively generate the rest of the tree
-        GenerateTreeRecursive(rootNode, depth - 1);
+        GenerateTreeRecursive(rootNode, depth - 1, depth);
     }
 
-    void GenerateTreeRecursive(TreeStructure.Node node, int depth)
+    void GenerateTreeRecursive(TreeStructure.Node node, int depth, int maxDepth)
     {
         if (depth <= 0) return;
 
-        GameObject prefabToUse = GetPrefabForDepth(depth);
+        GameObject prefabToUse = GetPrefabForDepth(depth, maxDepth);
 
         // Create left child
-        GameObject leftCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity); // Spawn at the same position
+        GameObject leftCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity);
         leftCave.name = node.cavePrefab.name + "_Left";
         node.left = new TreeStructure.Node(leftCave, node);
 
-        // Spawn a jewel in the left cave
-        GameObject leftJewel = Instantiate(jewelPrefab, leftCave.transform.position, Quaternion.identity);
-        leftJewel.name = leftCave.name + "_Jewel";
-        leftJewel.transform.SetParent(leftCave.transform); // Parent the jewel to the cave
-        leftJewel.SetActive(false); // Keep the jewel initially inactive
-
-        // Assign relationships in the CaveController script
-        var leftController = leftCave.GetComponent<CaveController>();
-        if (leftController != null)
-        {
-            leftController.parentCave = node.cavePrefab; // Set parent
-            node.cavePrefab.GetComponent<CaveController>().leftCave = leftCave; // Set left child
-            leftController.jewel = leftJewel; // Assign the jewel to the CaveController
-        }
-
         // Create right child
-        GameObject rightCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity); // Spawn at the same position
+        GameObject rightCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity);
         rightCave.name = node.cavePrefab.name + "_Right";
         node.right = new TreeStructure.Node(rightCave, node);
 
-        // Spawn a jewel in the right cave
-        GameObject rightJewel = Instantiate(jewelPrefab, rightCave.transform.position, Quaternion.identity);
-        rightJewel.name = rightCave.name + "_Jewel";
-        rightJewel.transform.SetParent(rightCave.transform); // Parent the jewel to the cave
-        rightJewel.SetActive(false); // Keep the jewel initially inactive
-
-        // Assign relationships in the CaveController script
-        var rightController = rightCave.GetComponent<CaveController>();
-        if (rightController != null)
-        {
-            rightController.parentCave = node.cavePrefab; // Set parent
-            node.cavePrefab.GetComponent<CaveController>().rightCave = rightCave; // Set right child
-            rightController.jewel = rightJewel; // Assign the jewel to the CaveController
-        }
-
         // Recurse for left and right children
-        GenerateTreeRecursive(node.left, depth - 1);
-        GenerateTreeRecursive(node.right, depth - 1);
+        GenerateTreeRecursive(node.left, depth - 1, maxDepth);
+        GenerateTreeRecursive(node.right, depth - 1, maxDepth);
     }
 
-    // Spawns a jewel in the given cave
-    void SpawnJewel(GameObject cave)
+    GameObject GetPrefabForDepth(int depth, int maxDepth)
     {
-        if (jewelPrefab != null)
+        // Root node (topmost level) always uses caveDepth1
+        if (depth == maxDepth)
         {
-            // Instantiate the jewel at the cave's position
-            GameObject jewel = Instantiate(jewelPrefab, cave.transform.position, Quaternion.identity);
-            jewel.name = cave.name + "_Jewel";
-
-            // Parent the jewel to the cave for better organization
-            jewel.transform.SetParent(cave.transform);
-
-            // Keep the jewel initially inactive
-            jewel.SetActive(false);
-
-            // Assign the jewel to the CaveController for activation/deactivation
-            var caveController = cave.GetComponent<CaveController>();
-            if (caveController != null)
-            {
-                caveController.jewel = jewel;
-            }
+            return caveDepth1;
         }
-        else
-        {
-            Debug.LogWarning("Jewel prefab is not assigned!");
-        }
-    }
 
-    GameObject GetPrefabForDepth(int depth)
-    {
-        // Return the appropriate prefab based on the depth
-        switch (depth)
-        {
-            case 4: 
-                return caveDepth1; // Depth 4 uses caveDepth1 again
-            case 3: 
-                return caveDepth3; // Depth 3 uses caveDepth3
-            case 2: 
-                return caveDepth2; // Depth 2 uses caveDepth2
-            case 1: 
-                return caveDepth1; // Depth 1 uses caveDepth1
-            default: 
-                Debug.LogWarning($"Invalid depth {depth}. Defaulting to caveDepth1.");
-                return caveDepth1; // Fallback to caveDepth1
-        }
+        // Alternate between caveDepth2 and caveDepth3 for other depths
+        return ((maxDepth - depth) % 2 == 0) ? caveDepth2 : caveDepth3;
     }
 
     void HideNonRouteCaves(TreeStructure tree)

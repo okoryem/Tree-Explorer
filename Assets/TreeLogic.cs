@@ -347,6 +347,27 @@ public class TreeLogic : MonoBehaviour
         Debug.Log($"Visited Nodes: {visitedNodeNames}");
     }
 
+    public void OnNodeButtonClick(GameObject targetNode)
+    {
+        // Hide the current node
+        if (currentPathNode != null && currentPathNode.Value.cavePrefab != null)
+        {
+            currentPathNode.Value.cavePrefab.SetActive(false);
+        }
+
+        // Show the target node
+        targetNode.SetActive(true);
+
+        // Update the current node to the target node
+        TreeStructure.Node targetTreeNode = FindNodeByGameObject(targetNode);
+        if (targetTreeNode != null)
+        {
+            currentPathNode = new LinkedListNode<TreeStructure.Node>(targetTreeNode);
+        }
+
+        Debug.Log($"Navigated to node: {targetNode.name}");
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.V)) // Press 'V' to print visited nodes

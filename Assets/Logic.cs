@@ -63,7 +63,7 @@ public class Logic : MonoBehaviour
             RectTransform panelRect = miniMapPanel.GetComponent<RectTransform>();
             if (panelRect != null)
             {
-                panelRect.anchoredPosition = new Vector2(0, -2700); // Reset the panel's position to a lower y value
+                panelRect.anchoredPosition = new Vector2(0, -2200); // Reset the panel's position to a lower y value
             }
         }
     }

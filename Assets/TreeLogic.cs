@@ -9,28 +9,34 @@ public class TreeLogic : MonoBehaviour
     public GameObject caveDepth1; // Prefab for depth 1
     public GameObject caveDepth2; // Prefab for depth 2
     public GameObject caveDepth3; // Prefab for depth 3
-    public GameObject titleScreen; // Prefav for the title screen
+    public GameObject titleScreen; // Prefab for the title screen
     public GameObject goodJobPopup; // Reference to the "Good Job" popup
     public GameObject tryAgainPopup; // Reference to the "Try Again" popup
-    private TreeStructure tree;
+    public TreeStructure tree; // Change from private to public
     private bool isNavigating = false; // Lock flag to prevent re-entry
     private LinkedList<TreeStructure.Node> correctPath = new LinkedList<TreeStructure.Node>(); // Correct path as a linked list
     private LinkedListNode<TreeStructure.Node> currentPathNode; // Tracks the current node in the linked list
     public HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
     public LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
 
+    private int depth; // Depth of the tree
+
     void Start()
     {
+        depth = 5; // Set the depth of the tree
         tree = new TreeStructure();
 
-        // Generate a binary tree of depth 3
-        GenerateTree(tree, 7);
+        // Generate a binary tree of the specified depth
+        GenerateTree(tree, depth);
 
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);
 
         // Generate the correct path based on BFS
         GenerateCorrectPath();
+
+        // Generate the map
+        FindObjectOfType<MapGenerator>().GenerateMap();
 
         // Traverse the tree in BFS order and log the names of the nodes
         Debug.Log("BFS Traversal of the Tree:");
@@ -347,6 +353,12 @@ public class TreeLogic : MonoBehaviour
         {
             PrintVisitedNodes();
         }
+    }
+
+    // Getter for the depth
+    public int GetDepth()
+    {
+        return depth;
     }
 
     // Inner TreeStructure class

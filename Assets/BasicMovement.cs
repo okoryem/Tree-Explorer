@@ -8,12 +8,13 @@ public class BasicMovement : MonoBehaviour
     public float speed = 2;
     public GameObject startScreen;
     public GameObject explanationScreen;
-    public 
+    public GameObject miniMapScreen;
 
     // Update is called once per frame
     void Update()
     {
-        if(!startScreen.activeInHierarchy && !explanationScreen.activeInHierarchy) {
+        if(!startScreen.activeInHierarchy && !explanationScreen.activeInHierarchy && !miniMapScreen.activeInHierarchy) {
+            // Get the input from the user
             Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
 
             animator.SetFloat("Horizontal", Input.GetAxis("Horizontal"));

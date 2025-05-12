@@ -540,6 +540,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 1840254795419633007, guid: 700b1cecc4cddd64998a1ef29c200c8f, type: 3}
+      propertyPath: m_TagString
+      value: CaveNode
+      objectReference: {fileID: 0}
     - target: {fileID: 5766844726220118799, guid: 700b1cecc4cddd64998a1ef29c200c8f, type: 3}
       propertyPath: m_Layer
       value: 3

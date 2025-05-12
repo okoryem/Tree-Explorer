@@ -8,6 +8,7 @@ public class ChestScript : MonoBehaviour, IInteractable
     public Sprite openedSprite;
 
     private TreeLogic treeLogic; // Reference to TreeLogic
+    private Tutorial tutorial; // Reference to the Tutorial script
 
     void Start()
     {
@@ -23,6 +24,18 @@ public class ChestScript : MonoBehaviour, IInteractable
         if (treeLogic == null)
         {
             Debug.LogError("TreeLogic component not found! Ensure the Tree Logic GameObject is tagged with 'TreeLogic' and has the TreeLogic script attached.");
+        }
+
+        // Find the Tutorial component
+        GameObject tutorialObject = GameObject.FindGameObjectWithTag("Tutorial");
+        if (tutorialObject != null)
+        {
+            tutorial = tutorialObject.GetComponent<Tutorial>();
+        }
+
+        if (tutorial == null)
+        {
+            Debug.LogError("Tutorial component not found! Ensure the Tutorial GameObject is tagged with 'Tutorial' and has the Tutorial script attached.");
         }
     }
 
@@ -63,6 +76,12 @@ public class ChestScript : MonoBehaviour, IInteractable
 
             // Drop one item down and to the right
             Instantiate(itemPrefab, transform.position + Vector3.down + Vector3.right * 0.5f, Quaternion.identity);
+        }
+
+        // Trigger the inventory tutorial
+        if (tutorial != null)
+        {
+            tutorial.showInventory();
         }
     }
 

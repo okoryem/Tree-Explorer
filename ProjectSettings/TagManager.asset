@@ -12,6 +12,9 @@ TagManager:
   - Jewel2
   - Jewel3
   - Logic
+  - MapCanvas
+  - CaveNode
+  - Tutorial
   layers:
   - Default
   - TransparentFX

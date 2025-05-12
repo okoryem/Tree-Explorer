@@ -21,9 +21,54 @@ public class TreeLogic : MonoBehaviour
 
     private int depth; // Depth of the tree
 
-    void Start()
+    // Public method to initialize the tree logic
+    public void InitializeTree(int treeDepth, string algorithm = "BFS")
     {
-        depth = 5; // Set the depth of the tree
+        // Check if there is an existing tree and map
+        if (tree != null && tree.GetRoot() != null)
+        {
+            Debug.Log("Existing tree and map found. Deleting them...");
+
+            // Delete all cave GameObjects associated with the tree
+            tree.TraverseBFS(node =>
+            {
+                if (node.cavePrefab != null)
+                {
+                    Destroy(node.cavePrefab); // Destroy the cave GameObject
+                }
+            });
+
+            // Clear the tree structure
+            tree = new TreeStructure();
+            visitedNodes.Clear();
+            currentPath.Clear();
+            correctPath.Clear();
+            currentPathNode = null;
+
+            Debug.Log("Tree and associated references cleared.");
+        }
+
+        // Delete all node buttons on the minimap
+        GameObject mapCanvas = GameObject.FindGameObjectWithTag("MapCanvas");
+        if (mapCanvas != null)
+        {
+            Transform mapPanel = mapCanvas.transform.Find("MapPanel");
+            if (mapPanel != null)
+            {
+                foreach (Transform child in mapPanel)
+                {
+                    if (child.name != "LineContainer") // Keep the LineContainer if it exists
+                    {
+                        Destroy(child.gameObject); // Destroy the button GameObject
+                    }
+                }
+            }
+        }
+
+        Debug.Log("Minimap buttons cleared.");
+
+        // Initialize the new tree
+        depth = treeDepth; // Set the depth of the tree
         tree = new TreeStructure();
 
         // Generate a binary tree of the specified depth
@@ -32,11 +77,46 @@ public class TreeLogic : MonoBehaviour
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);
 
-        // Generate the correct path based on BFS
-        GenerateCorrectPath();
+        // Generate the correct path based on the chosen algorithm
+        if (algorithm.ToUpper() == "DFS")
+        {
+            GenerateCorrectPathDFS();
+        }
+        else
+        {
+            GenerateCorrectPath(); // Default to BFS
+        }
 
-        // Generate the map
-        FindObjectOfType<MapGenerator>().GenerateMap();
+        // Temporarily enable the MapCanvas to generate the map
+        if (mapCanvas != null)
+        {
+            bool wasActive = mapCanvas.activeSelf;
+
+            if (!wasActive)
+            {
+                mapCanvas.SetActive(true); // Temporarily enable the MapCanvas
+            }
+
+            // Generate the map
+            MapGenerator mapGenerator = mapCanvas.GetComponentInChildren<MapGenerator>();
+            if (mapGenerator != null)
+            {
+                mapGenerator.GenerateMap(); // Call GenerateMap() here
+            }
+            else
+            {
+                Debug.LogError("MapGenerator instance not found on MapCanvas!");
+            }
+
+            if (!wasActive)
+            {
+                mapCanvas.SetActive(false); // Restore the original state of MapCanvas
+            }
+        }
+        else
+        {
+            Debug.LogError("MapCanvas GameObject not found! Ensure it is tagged with 'MapCanvas'.");
+        }
 
         // Traverse the tree in BFS order and log the names of the nodes
         Debug.Log("BFS Traversal of the Tree:");
@@ -47,11 +127,6 @@ public class TreeLogic : MonoBehaviour
                 Debug.Log(node.cavePrefab.name);
             }
         });
-    }
-
-    public void startGame(){ // Function for start button on title screen
-        titleScreen.SetActive(false);
-        Debug.Log("Start Button Pressed!");
     }
 
     // Function to search for a node by its GameObject
@@ -113,17 +188,8 @@ public class TreeLogic : MonoBehaviour
             // Update the current path and compare it with the correct path
             UpdateCurrentPath(targetNode);
 
-            // Deactivate all caves
-            tree.TraverseBFS(node =>
-            {
-                if (node.cavePrefab != null)
-                {
-                    node.cavePrefab.SetActive(false);
-                }
-            });
-
-            // Activate the target node's cave
-            targetNode.cavePrefab.SetActive(true);
+            // Update node visibility
+            UpdateNodeVisibility(targetNode);
 
             // Optionally, teleport the player to the target cave's position
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -140,13 +206,13 @@ public class TreeLogic : MonoBehaviour
     }
 
     // Helper method to determine if the chosen node is correct
-    private bool IsCorrectNode(TreeStructure.Node targetNode)
+    public bool IsCorrectNode(TreeStructure.Node targetNode)
     {
-        // Check if the target node matches the next node in the linked list
+        // Check if the target node matches the next node in the correct path
         if (currentPathNode != null && currentPathNode.Value == targetNode)
         {
             visitedNodes.Add(targetNode); // Mark the node as visited
-            currentPathNode = currentPathNode.Next; // Move to the next node in the linked list
+            currentPathNode = currentPathNode.Next; // Move to the next node in the correct path
             return true; // Correct choice
         }
 
@@ -180,7 +246,7 @@ public class TreeLogic : MonoBehaviour
         rootCave.name = "Root";
 
         // Create the root node and link it to the GameObject
-        TreeStructure.Node rootNode = new TreeStructure.Node(rootCave);
+        TreeStructure.Node rootNode = new TreeStructure.Node(rootCave, null); // Explicitly set parent to null
 
         // Insert the root node into the tree
         tree.SetRoot(rootNode);
@@ -198,11 +264,13 @@ public class TreeLogic : MonoBehaviour
         // Create left child
         GameObject leftCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity);
         leftCave.name = node.cavePrefab.name + "_Left";
+        leftCave.tag = "CaveNode"; // Assign the "CaveNode" tag
         node.left = new TreeStructure.Node(leftCave, node);
 
         // Create right child
         GameObject rightCave = Instantiate(prefabToUse, Vector3.zero, Quaternion.identity);
         rightCave.name = node.cavePrefab.name + "_Right";
+        rightCave.tag = "CaveNode"; // Assign the "CaveNode" tag
         node.right = new TreeStructure.Node(rightCave, node);
 
         // Recurse for left and right children
@@ -285,7 +353,47 @@ public class TreeLogic : MonoBehaviour
         Debug.Log("Correct Path (BFS, excluding root): " + string.Join(", ", correctPath.Select(node => node.cavePrefab.name)));
     }
 
-    private void UpdateCurrentPath(TreeStructure.Node targetNode)
+    public void GenerateCorrectPathDFS()
+    {
+        correctPath.Clear(); // Clear any existing path
+        visitedNodes.Clear(); // Clear visited nodes
+
+        if (tree == null || tree.GetRoot() == null) return;
+
+        TreeStructure.Node rootNode = tree.GetRoot();
+
+        // Add the root node to visited nodes
+        visitedNodes.Add(rootNode);
+
+        // Use a stack for DFS traversal
+        Stack<TreeStructure.Node> stack = new Stack<TreeStructure.Node>();
+        stack.Push(rootNode);
+
+        bool isRoot = true; // Flag to skip the root node in the correct path
+
+        while (stack.Count > 0)
+        {
+            TreeStructure.Node current = stack.Pop();
+
+            // Skip the root node in the correct path
+            if (isRoot)
+            {
+                isRoot = false;
+            }
+            else
+            {
+                correctPath.AddLast(current); // Add non-root nodes to the correct path
+            }
+
+            // Push right child first so that left child is processed first
+            if (current.right != null) stack.Push(current.right);
+            if (current.left != null) stack.Push(current.left);
+        }
+
+        Debug.Log("Correct Path (DFS, excluding root): " + string.Join(", ", correctPath.Select(node => node.cavePrefab.name)));
+    }
+
+    public void UpdateCurrentPath(TreeStructure.Node targetNode)
     {
         // Check if the target node has already been visited
         if (visitedNodes.Contains(targetNode))
@@ -366,6 +474,41 @@ public class TreeLogic : MonoBehaviour
         }
 
         Debug.Log($"Navigated to node: {targetNode.name}");
+    }
+
+    public void UpdateNodeVisibility(TreeStructure.Node activeNode)
+    {
+        // Traverse all nodes in the tree and deactivate them
+        tree.TraverseBFS(node =>
+        {
+            if (node.cavePrefab != null)
+            {
+                node.cavePrefab.SetActive(false); // Deactivate all nodes
+            }
+        });
+
+        // Activate only the active node
+        if (activeNode != null && activeNode.cavePrefab != null)
+        {
+            activeNode.cavePrefab.SetActive(true);
+            Debug.Log($"Node {activeNode.cavePrefab.name} is now active.");
+        }
+    }
+
+    public bool AreAllCorrectNodesVisited()
+    {
+        // Check if all nodes in the correct path have been visited
+        foreach (var node in correctPath)
+        {
+            if (!visitedNodes.Contains(node))
+            {
+                return false; // If any node in the correct path is not visited, return false
+            }
+        }
+
+        // All nodes in the correct path have been visited
+        Debug.Log("All nodes in the correct path have been visited in the correct order!");
+        return true;
     }
 
     void Update()

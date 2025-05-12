@@ -8,7 +8,7 @@ public class TextSpeed : MonoBehaviour
     public float timer = 0f;
     public float interval = 0.05f;
     private int charIndex = 0;
-    private string fullText = "Welcome to Cave Explorer. Your goal is to explore this cave using a Breadth First Search (BFS). Start by moving to the bottom left corner of the cave. Open Chest (PRESS E) to collect jewels. But you can only open chest if you are in a cave that follows the BFS. If you are in a cave that does not follow the BFS, you will be stuck in the cave forever...Just kidding. You can go back to previous nodes and go to the correct path. Remember BFS is a tree traversal algorithm that explores all the nodes at the present depth prior to moving on to the nodes at the next depth level. You can use this algorithm to explore the cave. Good luck!";
+    private string fullText = "Welcome to Cave Explorer. We will start you off with a tutorial so you get familiar with the mechanics.";
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

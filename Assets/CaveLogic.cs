@@ -7,6 +7,7 @@ public class CaveLogic : MonoBehaviour
     public Collider2D parentCollider; // Collider2D for the parent navigation
 
     private TreeLogic treeLogic; // Reference to TreeLogic
+    private Tutorial tutorial; // Reference to the Tutorial script
 
     void Start()
     {
@@ -20,6 +21,18 @@ public class CaveLogic : MonoBehaviour
         if (treeLogic == null)
         {
             Debug.LogError("TreeLogic component not found! Ensure the Tree Logic GameObject is tagged with 'TreeLogic' and has the TreeLogic script attached.");
+        }
+
+        // Find the Tutorial component using the tag
+        GameObject tutorialObject = GameObject.FindGameObjectWithTag("Tutorial");
+        if (tutorialObject != null)
+        {
+            tutorial = tutorialObject.GetComponent<Tutorial>();
+        }
+
+        if (tutorial == null)
+        {
+            Debug.LogError("Tutorial component not found! Ensure the Tutorial GameObject is tagged with 'Tutorial' and has the Tutorial script attached.");
         }
 
         // Ensure all colliders are assigned
@@ -40,12 +53,24 @@ public class CaveLogic : MonoBehaviour
                 Debug.Log("Left collider triggered!");
                 collision.transform.position = new Vector3(0.45f, 2, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "left");
+
+                // Trigger the minimap tutorial
+                if (tutorial != null)
+                {
+                    tutorial.showMiniMap();
+                }
             }
             else if (IsPointNearCollider(rightCollider, contactPoint))
             {
                 Debug.Log("Right collider triggered!");
                 collision.transform.position = new Vector3(0.45f, 2, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "right");
+
+                // Trigger the explore tutorial
+                if (tutorial != null)
+                {
+                    tutorial.showExplore();
+                }
             }
             else if (IsPointNearCollider(parentCollider, contactPoint))
             {

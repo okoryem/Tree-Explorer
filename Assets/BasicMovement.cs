@@ -9,11 +9,16 @@ public class BasicMovement : MonoBehaviour
     public GameObject startScreen;
     public GameObject explanationScreen;
     public GameObject miniMapScreen;
+    public Tutorial tutorial; // Reference to the Tutorial script
 
     // Update is called once per frame
     void Update()
     {
-        if(!startScreen.activeInHierarchy && !explanationScreen.activeInHierarchy && !miniMapScreen.activeInHierarchy) {
+        // Prevent movement if the tutorial is active or the player cannot move
+        if (!startScreen.activeInHierarchy && 
+            !explanationScreen.activeInHierarchy && 
+            !miniMapScreen.activeInHierarchy)
+        {
             // Get the input from the user
             Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
 

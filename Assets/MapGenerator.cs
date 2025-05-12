@@ -9,17 +9,6 @@ public class MapGenerator : MonoBehaviour
     public Transform mapPanel; // Reference to the MapPanel
     public TreeLogic treeLogic; // Reference to the TreeLogic script
 
-    void Start()
-    {
-        if (treeLogic == null)
-        {
-            Debug.LogError("TreeLogic reference is missing!");
-            return;
-        }
-
-        GenerateMap();
-    }
-
     public void GenerateMap()
     {
         // Clear any existing buttons in the map panel, but keep the LineContainer
@@ -100,7 +89,7 @@ public class MapGenerator : MonoBehaviour
         // Add a click event to the button
         button.onClick.AddListener(() =>
         {
-            treeLogic.OnNodeButtonClick(node.cavePrefab);
+            OnNodeButtonClick(node.cavePrefab);
 
             // Remove "You are here" text from all buttons
             foreach (Transform child in mapPanel)
@@ -202,7 +191,52 @@ public class MapGenerator : MonoBehaviour
     public void OnNodeButtonClick(GameObject targetNode)
     {
         Debug.Log($"Node clicked: {targetNode.name}");
-        // Existing logic...
+
+        // Find the corresponding TreeStructure.Node for the clicked button
+        TreeLogic.TreeStructure.Node targetTreeNode = treeLogic.FindNodeByGameObject(targetNode);
+        if (targetTreeNode == null)
+        {
+            Debug.LogError("Target node not found in the tree!");
+            return;
+        }
+
+        // Update node visibility
+        treeLogic.UpdateNodeVisibility(targetTreeNode);
+
+        // Update the current path in TreeLogic
+        treeLogic.UpdateCurrentPath(targetTreeNode);
+
+        // Check if the clicked node is the correct next node
+        if (treeLogic.IsCorrectNode(targetTreeNode))
+        {
+            // Mark the node as visited
+            treeLogic.visitedNodes.Add(targetTreeNode);
+
+            Debug.Log($"Node {targetNode.name} is correct and has been added to visitedNodes.");
+        }
+        else
+        {
+            Debug.Log($"Node {targetNode.name} is incorrect.");
+        }
+    }
+
+    private GameObject FindButtonForNode(TreeLogic.TreeStructure.Node node)
+    {
+        foreach (Transform child in mapPanel)
+        {
+            Button button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                Text buttonText = button.GetComponentInChildren<Text>();
+                if (buttonText != null && buttonText.text == node.cavePrefab.name)
+                {
+                    return child.gameObject;
+                }
+            }
+        }
+
+        Debug.LogWarning($"Button for node '{node.cavePrefab.name}' not found!");
+        return null;
     }
 
     // Update is called once per frame

@@ -4,6 +4,7 @@ public class JewelTrigger : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
     private Logic logic; // Reference to the Logic script
+    private Tutorial tutorial; // Reference to the Tutorial script
 
     void Start()
     {
@@ -14,10 +15,17 @@ public class JewelTrigger : MonoBehaviour
         }
 
         // Find the Logic script in the scene
-        logic = FindObjectOfType<Logic>();
+        logic = Object.FindFirstObjectByType<Logic>();
         if (logic == null)
         {
             Debug.LogError("Logic script not found in the scene!");
+        }
+
+        // Find the Tutorial script in the scene
+        tutorial = Object.FindFirstObjectByType<Tutorial>();
+        if (tutorial == null)
+        {
+            Debug.LogError("Tutorial script not found in the scene!");
         }
     }
 
@@ -48,6 +56,12 @@ public class JewelTrigger : MonoBehaviour
                 {
                     Debug.LogWarning("Unknown jewel tag!");
                 }
+            }
+
+            // Trigger the algorithm tutorial
+            if (tutorial != null)
+            {
+                tutorial.showAlgorithms();
             }
 
             // Destroy the jewel GameObject

@@ -5,6 +5,7 @@ public class JewelTrigger : MonoBehaviour
     public SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
     private Logic logic; // Reference to the Logic script
     private Tutorial tutorial; // Reference to the Tutorial script
+    public AudioSource DingSFX;
 
     void Start()
     {
@@ -35,6 +36,7 @@ public class JewelTrigger : MonoBehaviour
         // Check if the object that collided is on layer 6 (the character's layer)
         if (collision.gameObject.layer == 6) // Assuming layer 6 is the character
         {
+            AudioSource.PlayClipAtPoint(DingSFX.clip, transform.position, 1.0f);
             Debug.Log($"Player collected a jewel with tag: {gameObject.tag}");
 
             // Call the appropriate method in the Logic script based on the tag

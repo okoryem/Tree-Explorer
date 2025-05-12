@@ -6,6 +6,7 @@ public class ChestScript : MonoBehaviour, IInteractable
     public string ChestID { get; private set; }
     public GameObject itemPrefab;
     public Sprite openedSprite;
+    public AudioSource OpenChestSFX;
 
     private TreeLogic treeLogic; // Reference to TreeLogic
     private Tutorial tutorial; // Reference to the Tutorial script
@@ -64,6 +65,7 @@ public class ChestScript : MonoBehaviour, IInteractable
     private void OpenChest()
     {
         setOpened(true);
+        OpenChestSFX.Play();
 
         // Drop Items
         if (itemPrefab)

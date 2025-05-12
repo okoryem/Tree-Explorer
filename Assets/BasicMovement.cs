@@ -10,6 +10,7 @@ public class BasicMovement : MonoBehaviour
     public GameObject explanationScreen;
     public GameObject miniMapScreen;
     public Tutorial tutorial; // Reference to the Tutorial script
+    public AudioSource footstepsSound;
 
     // Update is called once per frame
     void Update()
@@ -20,12 +21,26 @@ public class BasicMovement : MonoBehaviour
             !miniMapScreen.activeInHierarchy)
         {
             // Get the input from the user
-            Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f);
+            float moveX = Input.GetAxis("Horizontal");
+            float moveY = Input.GetAxis("Vertical");
+            Vector3 movement = new Vector3(moveX, moveY, 0.0f);
 
-            animator.SetFloat("Horizontal", Input.GetAxis("Horizontal"));
-            animator.SetFloat("Vertical", Input.GetAxis("Vertical"));
+            animator.SetFloat("Horizontal", moveX);
+            animator.SetFloat("Vertical", moveY);
 
-            transform.position = transform.position + movement * Time.deltaTime * speed;
+            transform.position += movement * Time.deltaTime * speed;
+
+            // Play footstep sound if there is movement
+            if (movement.magnitude > 0.01f)
+            {
+                if (!footstepsSound.enabled)
+                    footstepsSound.enabled = true;
+            }
+            else
+            {
+                if (footstepsSound.enabled)
+                    footstepsSound.enabled = false;
+            }
         }
     }
 }

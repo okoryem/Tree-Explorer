@@ -10,6 +10,6 @@ public class Jewel1 : MonoBehaviour
     public void addJewel1(int amount) {
         jewel1Count += amount;
         jewel1Text.text = jewel1Count.ToString();
-
+        
     }
 }

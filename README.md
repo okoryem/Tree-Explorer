@@ -40,3 +40,6 @@
   - Footsteps SFX
     - Author: mypantsfelldown (Freesound)
     - [Concrete Footsteps](https://pixabay.com/sound-effects/concrete-footsteps-6752/)
+  - Background Music
+    - Author: GameChops
+    - [Stardew Ambient] (https://www.youtube.com/watch?v=UVWj55mVnrc)

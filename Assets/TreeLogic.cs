@@ -22,6 +22,7 @@ public class TreeLogic : MonoBehaviour
     private LinkedListNode<TreeStructure.Node> currentPathNode; // Tracks the current node in the linked list
     public HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
     public LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
+    public Dictionary<string, TreeStructure.Node> nodeMap = new Dictionary<string, TreeStructure.Node>(); // Dictionary to store nodes by name
 
     public int depth = 3; // Default depth of the tree
     public string selectedAlgorithm = "BFS"; // Default algorithm
@@ -91,6 +92,7 @@ public class TreeLogic : MonoBehaviour
             visitedNodes.Clear();
             currentPath.Clear();
             correctPath.Clear();
+            nodeMap.Clear();
             currentPathNode = null;
 
             Debug.Log("Tree and associated references cleared.");
@@ -117,6 +119,8 @@ public class TreeLogic : MonoBehaviour
 
         // Generate a binary tree of the specified depth
         GenerateTree(tree, depth);
+
+        tree.TraverseBFS(node => { if (node.cavePrefab != null) nodeMap[node.cavePrefab.name] = node; });
 
         // Hide all caves that are not part of the route
         HideNonRouteCaves(tree);

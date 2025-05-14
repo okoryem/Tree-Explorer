@@ -67,6 +67,9 @@ public class MapGenerator : MonoBehaviour
 
         // Create a button for the current node
         GameObject buttonObject = Instantiate(buttonPrefab, mapPanel);
+
+        buttonObject.name = node.cavePrefab.name; // Set the name of the button to the node's name
+
         Button button = buttonObject.GetComponent<Button>();
 
         // Set the button's text to the node's name
@@ -251,6 +254,85 @@ public class MapGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // Iterate through all buttons in the map panel
+        foreach (Transform child in mapPanel)
+        {
+            Button button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                // Get the node name from the button's GameObject name
+                string nodeName = child.name;
+
+                // Check if the node exists in the nodeMap
+                if (treeLogic.nodeMap.TryGetValue(nodeName, out TreeLogic.TreeStructure.Node node))
+                {
+                    // Check if the node has been visited
+                    if (treeLogic.visitedNodes.Contains(node))
+                    {
+                        // Node has been visited: Enable the button and reset its color
+                        button.interactable = true;
+                        ColorBlock colors = button.colors;
+                        colors.normalColor = Color.white; // Default color
+                        button.colors = colors;
+                    }
+                    else
+                    {
+                        // Node has not been visited: Disable the button and grey it out
+                        button.interactable = false;
+                        ColorBlock colors = button.colors;
+                        colors.normalColor = Color.grey; // Greyed-out color
+                        button.colors = colors;
+                    }
+
+                    // Check if this node's cavePrefab is the active one
+                    if (node.cavePrefab != null && node.cavePrefab.activeSelf)
+                    {
+                        // Remove existing "You are here" text from all buttons
+                        foreach (Transform sibling in mapPanel)
+                        {
+                            Text existingText = sibling.GetComponentInChildren<Text>();
+                            if (existingText != null && existingText.text == "You are here")
+                            {
+                                Destroy(existingText.gameObject);
+                            }
+                        }
+
+                        // Add "You are here" text to the current button
+                        GameObject youAreHereTextObject = new GameObject("YouAreHereText");
+                        youAreHereTextObject.transform.SetParent(child, false);
+
+                        Text youAreHereText = youAreHereTextObject.AddComponent<Text>();
+                        youAreHereText.text = "You are here";
+
+                        // Set the font to Bangers
+                        Font bangersFont = Resources.Load<Font>("Fonts/Bangers");
+                        if (bangersFont != null)
+                        {
+                            youAreHereText.font = bangersFont;
+                        }
+                        else
+                        {
+                            Debug.LogWarning("Bangers font not found! Using default font.");
+                            youAreHereText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                        }
+
+                        // Set font size and alignment
+                        youAreHereText.fontSize = 22;
+                        youAreHereText.alignment = TextAnchor.MiddleCenter;
+
+                        // Adjust the position of the text
+                        RectTransform textRect = youAreHereText.GetComponent<RectTransform>();
+                        textRect.anchorMin = new Vector2(0.5f, 0);
+                        textRect.anchorMax = new Vector2(0.5f, 0);
+                        textRect.pivot = new Vector2(0.5f, 1);
+                        textRect.anchoredPosition = new Vector2(0, 25); // Position below the button
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"Node '{nodeName}' not found in nodeMap.");
+                }
+            }
+        }
     }
 }

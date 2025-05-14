@@ -77,7 +77,7 @@ public class Tutorial : MonoBehaviour
 
         isTutorialActive = true;
         hasShownAlgorithms = true; // Mark the algorithm tutorial as shown
-        StartTyping("Ok let's start exploring the cave in a Breadth First algorithm. The goal of BFS is to explore each depth fully before moving on to the next. Now, head to the bottom left corner.");
+        StartTyping("Ok let's start exploring the cave in a Breadth First algorithm. The goal of BFS is to explore each depth fully going left to right before moving on to the next. Now, head to the bottom left corner.");
 
         // Generate a new tree with BFS
         TreeLogic treeLogic = Object.FindFirstObjectByType<TreeLogic>();
@@ -100,7 +100,7 @@ public class Tutorial : MonoBehaviour
         TreeLogic.hasShownDFS1 = true; // Mark the DFS tutorial as shown globally
 
         // Start typing the DFS tutorial message
-        StartTyping("Depth First Search (DFS) explores as far as possible along each branch before backtracking. Keeping heading to the left as deep as possible before back tracking. Let's explore the cave using DFS!");
+        StartTyping("Depth First Search (DFS) explores as far as possible along each branch before backtracking. Keeping heading to the left as deep as possible before back tracking to explore the right sub tree. Let's explore the cave using DFS!");
 
         // Generate a new tree with DFS
         TreeLogic treeLogic = UnityEngine.Object.FindFirstObjectByType<TreeLogic>();

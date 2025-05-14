@@ -7403,7 +7403,6 @@ MonoBehaviour:
   leftCollider: {fileID: 5606709244915517426}
   rightCollider: {fileID: 1039584457140346080}
   parentCollider: {fileID: 1101259986983616436}
-  selectionScreen: {fileID: 5879031552838129368, guid: fda16b2a36aedc9458af901a2c27661d, type: 3}
 --- !u!61 &1101259986983616436
 BoxCollider2D:
   m_ObjectHideFlags: 0

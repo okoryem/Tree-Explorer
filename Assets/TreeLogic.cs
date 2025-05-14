@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class TreeLogic : MonoBehaviour
 {
@@ -29,6 +30,18 @@ public class TreeLogic : MonoBehaviour
 
     // Global variable to track if showDFS has been shown
     public static bool hasShownDFS1 = false;
+    public Logic logic;
+
+    public Text timerText; // Reference to the TimerText UI element
+
+    // Timer variables
+    private float timerDuration = 0f;
+    private float timer = 0f;
+    private bool isTimerActive = false;
+
+    public GameObject endScreen; // Reference to the EndScreen GameObject
+    public Text endScreenMessageText; // Reference to the message Text on the EndScreen
+    public Text endScreenGemsText; // Reference to the gems Text on the EndScreen
 
     // Function to check if all nodes are visited and handle logic for showDFS and selectionScreen
     public void CheckAllNodesVisited()
@@ -63,7 +76,14 @@ public class TreeLogic : MonoBehaviour
 
     // Public method to initialize the tree logic
     public void InitializeTree(int treeDepth, string algorithm = "BFS")
-    {
+    {        // Reset jewel counts
+        if (logic != null)
+        {
+            logic.addJewel1(-logic.jewel1Count); // Reset jewel1 count to 0
+            logic.addJewel2(-logic.jewel2Count); // Reset jewel2 count to 0
+            logic.addJewel3(-logic.jewel3Count); // Reset jewel3 count to 0
+        }
+
         if (mapCanvas == null)
         {
             Debug.LogError("MapCanvas is not assigned! Please assign it in the Inspector.");
@@ -146,6 +166,9 @@ public class TreeLogic : MonoBehaviour
             Debug.LogError("MapGenerator instance not found on MapCanvas!");
         }
 
+        // Start the timer for the tree
+        StartTimer(treeDepth);
+
         // Traverse the tree in BFS order and log the names of the nodes
         Debug.Log("BFS Traversal of the Tree:");
         tree.TraverseBFS(node =>
@@ -158,6 +181,82 @@ public class TreeLogic : MonoBehaviour
 
         // Disable the MapCanvas at the end
         mapCanvas.SetActive(false);
+    }
+
+    private void StartTimer(int treeDepth)
+    {
+        if (treeDepth == 3)
+        {
+            isTimerActive = false; // No timer for depth 3
+            if (timerText != null)
+            {
+                timerText.gameObject.SetActive(false); // Hide the timer text
+            }
+            Debug.Log("Timer is disabled for depth 3.");
+            return;
+        }
+
+        timerDuration = 90f + (treeDepth - 3) * 30f; // Start at 1:30 for depth 4, increase by 30 seconds per depth
+        timer = timerDuration;
+        isTimerActive = true;
+
+        if (timerText != null)
+        {
+            timerText.gameObject.SetActive(true); // Show the timer text
+        }
+
+        Debug.Log($"Timer started for depth {treeDepth}: {timerDuration} seconds.");
+    }
+
+    private void HandleTimerExpiry()
+    {
+        if (endScreen != null)
+        {
+            // Show the EndScreen
+            endScreen.SetActive(true);
+
+            // Set the message text based on whether all nodes were visited
+            if (AreAllCorrectNodesVisited())
+            {
+                endScreenMessageText.text = "You explored the cave!";
+            }
+            else
+            {
+                endScreenMessageText.text = "Timer ran out, try again.";
+            }
+
+            // Calculate the total number of gems
+            int totalJewels = logic.jewel1Count + logic.jewel2Count + logic.jewel3Count;
+            endScreenGemsText.text = $"You ended with {totalJewels} jewel(s)";
+
+            // Start a coroutine to handle the delay before showing the SelectionScreen
+            StartCoroutine(ShowSelectionScreenAfterEndScreen());
+        }
+
+        isTimerActive = false; // Stop the timer
+    }
+
+    private IEnumerator ShowSelectionScreenAfterEndScreen()
+    {
+        // Wait for 5 seconds (duration of the EndScreen)
+        yield return new WaitForSeconds(5f);
+
+        // Hide the EndScreen
+        if (endScreen != null)
+        {
+            endScreen.SetActive(false);
+        }
+
+        // Show the SelectionScreen
+        if (selectionScreen != null)
+        {
+            selectionScreen.SetActive(true);
+            Debug.Log("Timer expired! Showing SelectionScreen.");
+        }
+        else
+        {
+            Debug.LogError("SelectionScreen is not assigned!");
+        }
     }
 
     // Function to search for a node by its GameObject
@@ -551,6 +650,20 @@ public class TreeLogic : MonoBehaviour
 
     void Update()
     {
+        // Update the timer
+        if (isTimerActive)
+        {
+            timer -= Time.deltaTime;
+
+            if (timer <= 0)
+            {
+                HandleTimerExpiry();
+            }
+
+            // Update the timer text
+            UpdateTimerText();
+        }
+
         // Call CheckAllNodesVisited to check if all correct nodes have been visited
         CheckAllNodesVisited();
 
@@ -558,6 +671,16 @@ public class TreeLogic : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.V))
         {
             PrintVisitedNodes();
+        }
+    }
+
+    private void UpdateTimerText()
+    {
+        if (timerText != null)
+        {
+            int minutes = Mathf.FloorToInt(timer / 60);
+            int seconds = Mathf.FloorToInt(timer % 60);
+            timerText.text = $"{minutes:00}:{seconds:00}"; // Format as MM:SS
         }
     }
 

@@ -8,6 +8,7 @@ public class MapGenerator : MonoBehaviour
     public GameObject buttonPrefab; // Reference to the NodeButton prefab
     public Transform mapPanel; // Reference to the MapPanel
     public TreeLogic treeLogic; // Reference to the TreeLogic script
+    public Logic logic;
 
     public void GenerateMap()
     {
@@ -203,6 +204,32 @@ public class MapGenerator : MonoBehaviour
     public void OnNodeButtonClick(GameObject targetNode)
     {
         Debug.Log($"Node clicked: {targetNode.name}");
+
+        // Check if the user has enough jewels to change the current cavePrefab
+        if (treeLogic == null || logic == null)
+        {
+            Debug.LogError("TreeLogic or Logic script is not assigned!");
+            return;
+        }
+
+
+        if (logic.jewel1Count >= 3)
+        {
+            logic.addJewel1(-3); // Subtract 3 jewel1s
+        }
+        else if (logic.jewel3Count >= 2)
+        {
+            logic.addJewel3(-2); // Subtract 2 jewel3s
+        }
+        else if (logic.jewel2Count >= 1)
+        {
+            logic.addJewel2(-1); // Subtract 1 jewel2
+        }
+        else
+        {
+            Debug.Log("Not enough jewels to change the current cavePrefab!");
+            return; // Exit if the user doesn't have enough jewels
+        }
 
         // Find the corresponding TreeStructure.Node for the clicked button
         TreeLogic.TreeStructure.Node targetTreeNode = treeLogic.FindNodeByGameObject(targetNode);

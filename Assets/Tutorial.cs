@@ -36,7 +36,7 @@ public class Tutorial : MonoBehaviour
     public void showCollection()
     {
         isTutorialActive = true;
-        StartTyping("Nice you got movement down! Now head over to the chest and press E. Collect the gems.");
+        StartTyping("Nice you got movement down! Now head over to the chest and press E. Collect the gems. We will give you 3 extra gems to start so press E a second time.");
     }
 
     // Function to show inventory tutorial
@@ -46,7 +46,7 @@ public class Tutorial : MonoBehaviour
 
         isTutorialActive = true;
         hasShownInventory = true; // Mark the inventory tutorial as shown
-        StartTyping("Your goal is to leave the cave with as many gems as possible.");
+        StartTyping("Your goal is to leave the cave with as many gems as possible in the given time. You can use gems to fast travel to preveiously explored caves. It costs 3 red jewels, 2 purple jewels, or 1 yellow jewels to fast travel so use them wisely.");
         showAlgorithms();
     }
 
@@ -57,7 +57,7 @@ public class Tutorial : MonoBehaviour
 
         isTutorialActive = true;
         hasShownMiniMap = true; // Mark the minimap tutorial as shown
-        StartTyping("Use the minimap to navigate through the cave system. Now go back to the root and head to the right.");
+        StartTyping("Use the minimap to navigate through the cave system. You can only access caves you have previously explored. Now go back to the root and head to the right.");
     }
 
     // Function to show explore tutorial
@@ -100,7 +100,7 @@ public class Tutorial : MonoBehaviour
         TreeLogic.hasShownDFS1 = true; // Mark the DFS tutorial as shown globally
 
         // Start typing the DFS tutorial message
-        StartTyping("Depth First Search (DFS) explores as far as possible along each branch before backtracking. Let's explore the cave using DFS!");
+        StartTyping("Depth First Search (DFS) explores as far as possible along each branch before backtracking. Keeping heading to the left as deep as possible before back tracking. Let's explore the cave using DFS!");
 
         // Generate a new tree with DFS
         TreeLogic treeLogic = UnityEngine.Object.FindFirstObjectByType<TreeLogic>();

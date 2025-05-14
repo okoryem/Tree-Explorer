@@ -12,6 +12,9 @@ public class TreeLogic : MonoBehaviour
     public GameObject titleScreen; // Prefab for the title screen
     public GameObject goodJobPopup; // Reference to the "Good Job" popup
     public GameObject tryAgainPopup; // Reference to the "Try Again" popup
+    public GameObject mapCanvas; // Reference to the MapCanvas GameObject
+    public GameObject selectionScreen; // Reference to the SelectionScreen GameObject
+
     public TreeStructure tree; // Change from private to public
     private bool isNavigating = false; // Lock flag to prevent re-entry
     private LinkedList<TreeStructure.Node> correctPath = new LinkedList<TreeStructure.Node>(); // Correct path as a linked list
@@ -19,11 +22,54 @@ public class TreeLogic : MonoBehaviour
     public HashSet<TreeStructure.Node> visitedNodes = new HashSet<TreeStructure.Node>(); // Tracks visited nodes
     public LinkedList<TreeStructure.Node> currentPath = new LinkedList<TreeStructure.Node>(); // Current path as a linked list
 
-    private int depth; // Depth of the tree
+    public int depth = 3; // Default depth of the tree
+    public string selectedAlgorithm = "BFS"; // Default algorithm
+
+    // Global variable to track if showDFS has been shown
+    public static bool hasShownDFS1 = false;
+
+    // Function to check if all nodes are visited and handle logic for showDFS and selectionScreen
+    public void CheckAllNodesVisited()
+    {
+        Debug.Log("hasShowenDFS:" + hasShownDFS1);
+        Debug.Log("AreAllCorrectNodesVisited:" + AreAllCorrectNodesVisited());
+        if (AreAllCorrectNodesVisited())
+        {
+
+            if (!hasShownDFS1)
+            {
+                // Run showDFS if it hasn't been shown yet
+                Tutorial tutorial = UnityEngine.Object.FindFirstObjectByType<Tutorial>();
+                if (tutorial != null)
+                {
+                    tutorial.showDFS();
+                }
+                // Mark showDFS as shown
+            }
+            else
+            {
+                // Show the SelectionScreen for subsequent visits
+                if (selectionScreen != null && !selectionScreen.activeSelf)
+                {
+                    selectionScreen.SetActive(true);
+                    Debug.Log("SelectionScreen is now visible.");
+                }
+            }
+        }
+    }
 
     // Public method to initialize the tree logic
     public void InitializeTree(int treeDepth, string algorithm = "BFS")
     {
+        if (mapCanvas == null)
+        {
+            Debug.LogError("MapCanvas is not assigned! Please assign it in the Inspector.");
+            return;
+        }
+
+        // Enable the MapCanvas at the start
+        mapCanvas.SetActive(true);
+
         // Check if there is an existing tree and map
         if (tree != null && tree.GetRoot() != null)
         {
@@ -49,18 +95,14 @@ public class TreeLogic : MonoBehaviour
         }
 
         // Delete all node buttons on the minimap
-        GameObject mapCanvas = GameObject.FindGameObjectWithTag("MapCanvas");
-        if (mapCanvas != null)
+        Transform mapPanel = mapCanvas.transform.Find("MapPanel");
+        if (mapPanel != null)
         {
-            Transform mapPanel = mapCanvas.transform.Find("MapPanel");
-            if (mapPanel != null)
+            foreach (Transform child in mapPanel)
             {
-                foreach (Transform child in mapPanel)
+                if (child.name != "LineContainer") // Keep the LineContainer if it exists
                 {
-                    if (child.name != "LineContainer") // Keep the LineContainer if it exists
-                    {
-                        Destroy(child.gameObject); // Destroy the button GameObject
-                    }
+                    Destroy(child.gameObject); // Destroy the button GameObject
                 }
             }
         }
@@ -87,35 +129,15 @@ public class TreeLogic : MonoBehaviour
             GenerateCorrectPath(); // Default to BFS
         }
 
-        // Temporarily enable the MapCanvas to generate the map
-        if (mapCanvas != null)
+        // Generate the map
+        MapGenerator mapGenerator = mapCanvas.GetComponentInChildren<MapGenerator>();
+        if (mapGenerator != null)
         {
-            bool wasActive = mapCanvas.activeSelf;
-
-            if (!wasActive)
-            {
-                mapCanvas.SetActive(true); // Temporarily enable the MapCanvas
-            }
-
-            // Generate the map
-            MapGenerator mapGenerator = mapCanvas.GetComponentInChildren<MapGenerator>();
-            if (mapGenerator != null)
-            {
-                mapGenerator.GenerateMap(); // Call GenerateMap() here
-            }
-            else
-            {
-                Debug.LogError("MapGenerator instance not found on MapCanvas!");
-            }
-
-            if (!wasActive)
-            {
-                mapCanvas.SetActive(false); // Restore the original state of MapCanvas
-            }
+            mapGenerator.GenerateMap(); // Call GenerateMap() here
         }
         else
         {
-            Debug.LogError("MapCanvas GameObject not found! Ensure it is tagged with 'MapCanvas'.");
+            Debug.LogError("MapGenerator instance not found on MapCanvas!");
         }
 
         // Traverse the tree in BFS order and log the names of the nodes
@@ -127,6 +149,9 @@ public class TreeLogic : MonoBehaviour
                 Debug.Log(node.cavePrefab.name);
             }
         });
+
+        // Disable the MapCanvas at the end
+        mapCanvas.SetActive(false);
     }
 
     // Function to search for a node by its GameObject
@@ -497,6 +522,13 @@ public class TreeLogic : MonoBehaviour
 
     public bool AreAllCorrectNodesVisited()
     {
+        // Check if the correct path is empty
+        if (correctPath.Count == 0)
+        {
+            Debug.LogWarning("Correct path is empty. Cannot verify if all nodes are visited.");
+            return false; // Return false if there is no correct path
+        }
+
         // Check if all nodes in the correct path have been visited
         foreach (var node in correctPath)
         {
@@ -513,7 +545,11 @@ public class TreeLogic : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V)) // Press 'V' to print visited nodes
+        // Call CheckAllNodesVisited to check if all correct nodes have been visited
+        CheckAllNodesVisited();
+
+        // Debugging: Press 'V' to print visited nodes
+        if (Input.GetKeyDown(KeyCode.V))
         {
             PrintVisitedNodes();
         }
@@ -523,6 +559,31 @@ public class TreeLogic : MonoBehaviour
     public int GetDepth()
     {
         return depth;
+    }
+
+    // Method to set the algorithm
+    public void SetAlgorithm(string algorithm)
+    {
+        selectedAlgorithm = algorithm;
+    }
+
+    // Update the InitializeTree method to use the selected algorithm
+    public void InitializeTree(int treeDepth)
+    {
+        InitializeTree(treeDepth, selectedAlgorithm);
+    }
+
+    // Method to set the depth
+    public void SetDepth(int newDepth)
+    {
+        depth = newDepth;
+        Debug.Log($"Tree depth set to: {depth}");
+    }
+
+    // Update the InitializeTree method to use the current depth
+    public void InitializeTree(string algorithm = "BFS")
+    {
+        InitializeTree(depth, algorithm);
     }
 
     // Inner TreeStructure class

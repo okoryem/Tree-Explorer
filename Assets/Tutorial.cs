@@ -5,6 +5,8 @@ public class Tutorial : MonoBehaviour
 {
     public bool isTutorialActive = false;
     public Text tutorialText;
+    public GameObject selectionScreen; // Reference to the SelectionScreen GameObject
+    public GameObject miniMapPanel; // Reference to the minimap panel
 
     private float timer = 0f;
     private float interval = 0.05f; // Time between each character
@@ -20,6 +22,8 @@ public class Tutorial : MonoBehaviour
     private float movementTimer = 0f; // Tracks time since movement started
     private bool isMovementTimerRunning = false; // Tracks if the movement timer is active
     private bool hasShownExplore = false; // New flag for explore tutorial
+    //private bool hasShownDFS = false; // Flag to ensure showDFS runs only once
+
 
     // Function to show controls tutorial
     public void showControls()
@@ -89,16 +93,22 @@ public class Tutorial : MonoBehaviour
 
     public void showDFS()
     {
+        Debug.Log("DFS tutorial triggered!"); // Debug log to confirm the function is called
+        if (TreeLogic.hasShownDFS1) return; // Prevent this from running multiple times
+
         isTutorialActive = true;
+        TreeLogic.hasShownDFS1 = true; // Mark the DFS tutorial as shown globally
 
         // Start typing the DFS tutorial message
         StartTyping("Depth First Search (DFS) explores as far as possible along each branch before backtracking. Let's explore the cave using DFS!");
 
         // Generate a new tree with DFS
-        TreeLogic treeLogic = Object.FindFirstObjectByType<TreeLogic>();
+        TreeLogic treeLogic = UnityEngine.Object.FindFirstObjectByType<TreeLogic>();
         if (treeLogic != null)
         {
+            miniMapPanel.SetActive(true); // Show the minimap panel
             treeLogic.InitializeTree(3, "DFS"); // Generate a new tree with DFS
+            miniMapPanel.SetActive(false); // Hide the minimap panel
         }
         else
         {
@@ -168,11 +178,7 @@ public class Tutorial : MonoBehaviour
             }
         }
 
-        // Check if all correct nodes have been visited
-        TreeLogic treeLogic = Object.FindFirstObjectByType<TreeLogic>();
-        if (treeLogic != null && treeLogic.AreAllCorrectNodesVisited() && !hasShownAlgorithms)
-        {
-            showDFS(); // Trigger the DFS tutorial
-        }
+        
     }
+
 }

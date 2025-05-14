@@ -34,12 +34,6 @@ public class CaveLogic : MonoBehaviour
         {
             Debug.LogError("Tutorial component not found! Ensure the Tutorial GameObject is tagged with 'Tutorial' and has the Tutorial script attached.");
         }
-
-        // Ensure all colliders are assigned
-        if (leftCollider == null || rightCollider == null || parentCollider == null)
-        {
-            Debug.LogError("One or more colliders are not assigned in CaveLogic!");
-        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -65,12 +59,7 @@ public class CaveLogic : MonoBehaviour
                 Debug.Log("Right collider triggered!");
                 collision.transform.position = new Vector3(0.45f, 2, 3); // Move the miner to a specific point
                 treeLogic.Navigate(gameObject, "right");
-
-                // Trigger the explore tutorial
-                if (tutorial != null)
-                {
-                    tutorial.showExplore();
-                }
+                tutorial.showExplore(); // Show the explore tutorial
             }
             else if (IsPointNearCollider(parentCollider, contactPoint))
             {

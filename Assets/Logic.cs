@@ -18,6 +18,9 @@ public class Logic : MonoBehaviour
     private bool isMiniMapActive = true;
     public TreeLogic treeLogic; // Reference to the TreeLogic script
     public Tutorial tutorial; // Reference to the Tutorial script
+    public GameObject selectionScreen; // Reference to the SelectionScreen GameObject
+    public GetAlgo getAlgo; // Reference to the GetAlgo script
+    public GetDepth getDepth; // Reference to the GetDepth script
 
     private int currentDepth = 3; // Default depth for the tutorial
 
@@ -77,31 +80,6 @@ public class Logic : MonoBehaviour
         }
     }
 
-    public void startBFSTutorial()
-    {
-        if (treeLogic != null)
-        {
-            treeLogic.InitializeTree(currentDepth, "BFS"); // Generate a tree with BFS
-        }
-
-        if (tutorial != null)
-        {
-            tutorial.showAlgorithms(); // Show BFS tutorial
-        }
-    }
-
-    public void startDFSTutorial()
-    {
-        if (treeLogic != null)
-        {
-            treeLogic.InitializeTree(currentDepth, "DFS"); // Generate a tree with DFS
-        }
-
-        if (tutorial != null)
-        {
-            tutorial.showDFS(); // Show DFS tutorial
-        }
-    }
 
     [ContextMenu("Increase Jewel 1")]
     public void addJewel1(int amount)
@@ -139,6 +117,46 @@ public class Logic : MonoBehaviour
             {
                 panelRect.anchoredPosition = new Vector2(0, -2200); // Reset the panel's position to a lower y value
             }
+        }
+    }
+
+    public void StartTreeFromSelection()
+    {
+        if (treeLogic == null)
+        {
+            Debug.LogError("TreeLogic script is not assigned!");
+            return;
+        }
+
+        if (getAlgo == null)
+        {
+            Debug.LogError("GetAlgo script is not assigned!");
+            return;
+        }
+
+        if (getDepth == null)
+        {
+            Debug.LogError("GetDepth script is not assigned!");
+            return;
+        }
+
+        // Get the selected algorithm and depth
+        string selectedAlgorithm = treeLogic.selectedAlgorithm; // Algorithm set by GetAlgo
+        int selectedDepth = treeLogic.depth; // Depth set by GetDepth
+
+        // Initialize the tree with the selected algorithm and depth
+        treeLogic.InitializeTree(selectedDepth, selectedAlgorithm);
+
+        Debug.Log($"Tree initialized with algorithm: {selectedAlgorithm} and depth: {selectedDepth}");
+
+        // Close the selection screen
+        if (selectionScreen != null)
+        {
+            selectionScreen.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("SelectionScreen GameObject is not assigned!");
         }
     }
 }

@@ -26,6 +26,15 @@ public class MapGenerator : MonoBehaviour
         {
             GameObject lineContainerObject = new GameObject("LineContainer");
             lineContainerObject.transform.SetParent(mapPanel, false);
+            lineContainer = lineContainerObject.transform;
+        }
+        else
+        {
+            // Clear all lines in the LineContainer
+            foreach (Transform line in lineContainer)
+            {
+                Destroy(line.gameObject);
+            }
         }
 
         // Start generating the map from the root node

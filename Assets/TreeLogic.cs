@@ -14,6 +14,7 @@ public class TreeLogic : MonoBehaviour
     public GameObject tryAgainPopup; // Reference to the "Try Again" popup
     public GameObject mapCanvas; // Reference to the MapCanvas GameObject
     public GameObject selectionScreen; // Reference to the SelectionScreen GameObject
+    public GameObject tutorialGameObject; // Reference to the Tutorial GameObject
 
     public TreeStructure tree; // Change from private to public
     private bool isNavigating = false; // Lock flag to prevent re-entry
@@ -52,6 +53,7 @@ public class TreeLogic : MonoBehaviour
                 if (selectionScreen != null && !selectionScreen.activeSelf)
                 {
                     selectionScreen.SetActive(true);
+                    tutorialGameObject.SetActive(false); // Hide the tutorial GameObject
                     Debug.Log("SelectionScreen is now visible.");
                 }
             }

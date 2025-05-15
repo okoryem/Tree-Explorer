@@ -1,5 +1,5 @@
 ## Cave Explorer
-- You play as a miner who is seeking to become rich so he explores caves looking to mine expensive minerals to sell. Getting these minerals is no easy task though, since these caves are infested with monsters who are eager to dine on our curious explorers. Fortunately, our miner has an ace up his sleeve, he has inherited maps which can guide him through the caves safely past the monsters and to the rarest of minerals. The miner must do this quickly or risk having his scent picked up by the monsters, ending up on the menu for them.
+- You play as a miner who is seeking to become rich so he explores caves looking to find expensive minerals to sell. These caves are long and easy to get lost in, but fortunately for the miner he figured out they are all structured as binary trees! He utilizes Bread-First Search (BFS) and Depth-First Search to safely navigate his way through the binary tree caves. The further in depth he goes into the cave the more expensive gems he will find along the way. Help the miner become rich while also learning how to traverse binary trees!
 ## Developers
 - Dylan Giletto (dgiletto@udel.edu)
 - Oryem Kilama (okoryem@udel.edu)
@@ -8,8 +8,9 @@
 ## Basic Instructions
 - Basic Movement (W,A,S,D)
 - Interact (E)
+- Map (Left-Click Map Button)
 ## Screenshot
-- Coming Soon
+- ![Gameplay Screenshot](Docs/GameplayScreenshot.png)
 ## Gameplay Video
 - Comming Soon
 ## Educational Game Design Document
@@ -42,4 +43,7 @@
     - [Concrete Footsteps](https://pixabay.com/sound-effects/concrete-footsteps-6752/)
   - Background Music
     - Author: GameChops
-    - [Stardew Ambient] (https://www.youtube.com/watch?v=UVWj55mVnrc)
+    - [Stardew Ambient](https://www.youtube.com/watch?v=UVWj55mVnrc)
+## Links
+- [Presentation](https://docs.google.com/presentation/d/1TxCEbdOOUBEuujDoUImwUHh07sRIJH7KjRTX1UZ9f9g/edit?usp=sharing)
+- [Game](https://okoryem.github.io/Tree-Explorer/)

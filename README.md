@@ -10,7 +10,7 @@
 - Interact (E)
 - Map (Left-Click Map Button)
 ## Screenshot
-- ![Gameplay Screenshot](Docs/GameplayScreenshot.png)
+![Gameplay Screenshot](Docs/GameplayScreenshot.png)
 ## Gameplay Video
 - Comming Soon
 ## Educational Game Design Document

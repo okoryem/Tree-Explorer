@@ -12,7 +12,7 @@
 ## Screenshot
 ![Gameplay Screenshot](Docs/GameplayScreenshot.png)
 ## Gameplay Video
-- Comming Soon
+- [Gameplay Video](https://drive.google.com/file/d/1uEJfGurbPsLgbu64l005LcPhQHncShEA/view?usp=sharing) 
 ## Educational Game Design Document
 - [Educational Game Design Document](Docs/EGDD.md)
 ## Resources

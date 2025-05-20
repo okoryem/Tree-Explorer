@@ -12,7 +12,7 @@
 ## Screenshot
 ![Gameplay Screenshot](Docs/GameplayScreenshot.png)
 ## Gameplay Video
-- [Gameplay Video](https://drive.google.com/file/d/1uEJfGurbPsLgbu64l005LcPhQHncShEA/view?usp=sharing) 
+- [Gameplay Video](https://drive.google.com/file/d/1Y0vQZBFz0zsWkTdtBx_8S4KPe9D2NHl7/view?usp=sharing) 
 ## Educational Game Design Document
 - [Educational Game Design Document](Docs/EGDD.md)
 ## Resources
@@ -45,5 +45,5 @@
     - Author: GameChops
     - [Stardew Ambient](https://www.youtube.com/watch?v=UVWj55mVnrc)
 ## Links
-- [Presentation](https://docs.google.com/presentation/d/1TxCEbdOOUBEuujDoUImwUHh07sRIJH7KjRTX1UZ9f9g/edit?usp=sharing)
+- [Presentation](https://www.canva.com/design/DAGnnlecW_k/Gqe0kBusqaLeEzOMlDkHTA/edit)
 - [Game](https://okoryem.github.io/Tree-Explorer/)
